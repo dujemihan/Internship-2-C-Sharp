@@ -1,8 +1,8 @@
-﻿var members = new Dictionary<int, (
+﻿var members = new List<(
     string name,
     string surname,
     DateOnly dob,
-    Dictionary<int, (string title, string author, DateOnly date)> borrows)>
+    List<(string title, string author, DateOnly borrowDate)> borrows)>
 {
 };
 
@@ -53,12 +53,12 @@ static void PrintPrompt()
     Console.Write("Odaberite opciju: ");
 }
 
-static void StartMembersMenu()
+void StartMembersMenu()
 {
     while (MembersMenuLoop()) ;
 }
 
-static bool MembersMenuLoop()
+bool MembersMenuLoop()
 {
     const string menu = @"1 - Unos novog člana
 2 - Brisanje člana
@@ -78,6 +78,7 @@ static bool MembersMenuLoop()
         switch (input.KeyChar)
         {
             case '1':
+                AddNewMember();
                 return true;
             case '2':
                 return true;
@@ -92,4 +93,46 @@ static bool MembersMenuLoop()
                 break;
         }
     }
+}
+
+void AddNewMember()
+{
+    var name = "";
+    var surname = "";
+    var dateString = "";
+    DateOnly date;
+
+    Console.Clear();
+    while (name == "")
+    {
+        Console.Write("Unesite ime: ");
+        name = Console.ReadLine() ?? "";
+        if (name == "")
+            Console.WriteLine("Molimo unesite ime!");
+    }
+    while (surname == "")
+    {
+        Console.Write("Unesite prezime: ");
+        surname = Console.ReadLine() ?? "";
+        if (surname == "")
+            Console.WriteLine("Molimo unesite prezime!");
+    }
+    while (true)
+    {
+        Console.Write("Unesite datum rodenja (YYYY-MM-DD): ");
+        dateString = Console.ReadLine() ?? "";
+
+        if (!DateOnly.TryParse(dateString, out date))
+        {
+            Console.WriteLine("Neispravan unos datuma, molimo pokusajte ponovno.");
+        }
+        else
+            break;
+    }
+
+    members.Add((name, surname, date,
+        new List<(string title, string author, DateOnly borrowDate)>()));
+
+    Console.WriteLine("Unos je uspjesan, pritisnite bilo koju tipku za nastavak.");
+    Console.ReadKey();
 }
