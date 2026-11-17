@@ -81,10 +81,11 @@ bool MembersMenuLoop()
                 AddNewMember();
                 return true;
             case '2':
-                return true;
+                return DeleteMember();
             case '3':
                 return true;
             case '4':
+                PrintAllMembers();
                 return true;
             case '0':
                 return false;
@@ -133,6 +134,79 @@ void AddNewMember()
     members.Add((name, surname, date,
         new List<(string title, string author, DateOnly borrowDate)>()));
 
-    Console.WriteLine("Unos je uspjesan, pritisnite bilo koju tipku za nastavak.");
+    Console.WriteLine("Unos je uspjesan.");
+    WaitKey();
+}
+
+bool DeleteMember()
+{
+    const string menu = @"1 - Po ID-ju
+2 - Po imenu i prezimenu
+0 - Povratak
+";
+    const string prompt = "Odaberite opciju: ";
+
+    Console.Clear();
+    Console.WriteLine(menu);
+    while (true)
+    {
+        Console.Write(prompt);
+        var input = Console.ReadKey();
+
+        switch (input.KeyChar)
+        {
+            case '1':
+                return DeleteMemberById();
+            case '2':
+                return true;
+            default:
+                Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
+                break;
+        }
+    }
+}
+
+bool DeleteMemberById()
+{
+    int id = -1;
+    bool idValid = false;
+
+    Console.Clear();
+    while (!idValid) {
+        Console.Write("Unesite ID clana: ");
+        idValid = int.TryParse(Console.ReadLine(), out id);
+    }
+
+    try
+    {
+        var member = members[id];
+        members.Remove(member);
+        Console.WriteLine("Clan uspjesno izbrisan.");
+    } catch (ArgumentOutOfRangeException)
+    {
+        Console.WriteLine("Navedeni clan ne postoji.");
+        idValid = false;
+    }
+
+    WaitKey();
+    return idValid;
+}
+
+void PrintAllMembers()
+{
+    Console.Clear();
+    Console.WriteLine("Popis clanova:");
+
+    foreach (var member in members)
+    {
+        Console.WriteLine($"[{members.IndexOf(member)}] {member.surname}, {member.name} ({DateTime.Now.AddYears(-member.dob.Year).Year})");
+    }
+
+    WaitKey();
+}
+
+void WaitKey()
+{
+    Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
     Console.ReadKey();
 }
