@@ -199,7 +199,7 @@ void WaitForKey()
     Console.ReadKey();
 }
 
-char ShowMenu(in string menu, char[] allowedOptions)
+char ShowMenu(in string menu, in char[] allowedOptions)
 {
     Console.Clear();
     Console.WriteLine(menu);
