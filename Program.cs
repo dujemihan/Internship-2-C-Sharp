@@ -1,4 +1,4 @@
-﻿using Member = (string name, string surname, System.DateOnly dob,
+﻿using Member = (int id, string name, string surname, System.DateOnly dob,
     System.Collections.Generic.List<(string title, string author, System.DateOnly borrowDate)> borrows);
 var members = new List<Member>
 {
@@ -96,7 +96,7 @@ void AddNewMember()
             break;
     }
 
-    members.Add((name, surname, date,
+    members.Add((new Random().Next(), name, surname, date,
         new List<(string title, string author, DateOnly borrowDate)>()));
 
     Console.WriteLine("Unos je uspjesan.");
@@ -136,19 +136,19 @@ void DeleteMemberById()
         idValid = int.TryParse(Console.ReadLine(), out id);
     }
 
-    try
+    var firstMember = members.Find(m => m.id == id);
+    if (firstMember != default(Member))
     {
-        var member = members[id];
-        members.Remove(member);
+        members.Remove(firstMember);
         Console.WriteLine("Clan uspjesno izbrisan.");
-    } catch (ArgumentOutOfRangeException)
+    }
+    else
     {
         Console.WriteLine("Navedeni clan ne postoji.");
     }
 
     WaitForKey();
 }
-
 
 void DeleteMemberByName()
 {
@@ -187,7 +187,7 @@ void PrintAllMembers()
 
     foreach (var member in members)
     {
-        Console.WriteLine($"[{members.IndexOf(member)}] {member.surname}, {member.name} ({DateTime.Now.AddYears(-member.dob.Year).Year})");
+        Console.WriteLine($"[{member.id}] {member.surname}, {member.name} ({DateTime.Now.AddYears(-member.dob.Year).Year})");
     }
 
     WaitForKey();
