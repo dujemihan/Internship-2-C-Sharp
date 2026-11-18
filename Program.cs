@@ -1,5 +1,6 @@
-﻿using Member = (int id, string name, string surname, System.DateOnly dob,
-    System.Collections.Generic.List<(string title, string author, System.DateOnly borrowDate)> borrows);
+﻿using Borrow = (int id, string title, string author, System.DateOnly borrowDate, bool returned);
+using Member = (int id, string name, string surname, System.DateOnly dob,
+    System.Collections.Generic.List<(int id, string title, string author, System.DateOnly borrowDate, bool returned)> borrows);
 var members = new List<Member>
 {
 };
@@ -97,7 +98,7 @@ void AddNewMember()
     }
 
     members.Add((new Random().Next(), name, surname, date,
-        new List<(string title, string author, DateOnly borrowDate)>()));
+        new List<Borrow>()));
 
     Console.WriteLine("Unos je uspjesan.");
     WaitForKey();
@@ -139,8 +140,20 @@ void DeleteMemberById()
     var firstMember = members.Find(m => m.id == id);
     if (firstMember != default(Member))
     {
-        members.Remove(firstMember);
-        Console.WriteLine("Clan uspjesno izbrisan.");
+        while (true)
+        {
+            Console.Write($"Pronaden clan {firstMember.surname}, {firstMember.name}. Zelite li ga izbrisati? (Y/N) ");
+            var key = Console.ReadKey().KeyChar;
+            Console.WriteLine("");
+            if (key == 'y' || key == 'Y')
+            {
+                members.Remove(firstMember);
+                Console.WriteLine("Clan uspjesno izbrisan.");
+                break;
+            }
+            else if (key == 'n' || key == 'N')
+                break;
+        }
     }
     else
     {
@@ -170,12 +183,24 @@ void DeleteMemberByName()
     var firstMember = members.Find(m => m.name == name && m.surname == surname);
     if (firstMember != default(Member))
     {
-        Console.WriteLine($"Clan [{firstMember.id}] uspjesno izbrisan.");
-        members.Remove(firstMember);
+        while (true)
+        {
+            Console.Write($"Pronaden clan [{firstMember.id}]. Zelite li ga izbrisati? (Y/N) ");
+            var key = Console.ReadKey().KeyChar;
+            Console.WriteLine("");
+            if (key == 'y' || key == 'Y')
+            {
+                members.Remove(firstMember);
+                Console.WriteLine("Clan uspjesno izbrisan.");
+                break;
+            }
+            else if (key == 'n' || key == 'N')
+                break;
+        }
     }
     else
     {
-        Console.WriteLine("Clan nije pronaden.");
+        Console.WriteLine("Navedeni clan ne postoji.");
     }
     WaitForKey();
 }
