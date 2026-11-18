@@ -1,8 +1,6 @@
-﻿var members = new List<(
-    string name,
-    string surname,
-    DateOnly dob,
-    List<(string title, string author, DateOnly borrowDate)> borrows)>
+﻿using Member = (string name, string surname, System.DateOnly dob,
+    System.Collections.Generic.List<(string title, string author, System.DateOnly borrowDate)> borrows);
+var members = new List<Member>
 {
 };
 
