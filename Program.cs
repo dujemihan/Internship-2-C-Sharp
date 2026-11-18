@@ -29,10 +29,10 @@ while (true)
 
 void StartMembersMenuLoop()
 {
-    while (LoopMembersMenu()) ;
+    while (LoopMembersMenu() != 0) ;
 }
 
-bool LoopMembersMenu()
+int LoopMembersMenu()
 {
     const string menu = @"1 - Unos novog člana
 2 - Brisanje člana
@@ -47,16 +47,17 @@ bool LoopMembersMenu()
     {
         case '1':
             AddNewMember();
-            return true;
+            return 1;
         case '2':
-            return DeleteMember();
+            DeleteMember();
+            return 1;
         case '3':
-            return true;
+            return 1;
         case '4':
             PrintAllMembers();
-            return true;
+            return 1;
         default:
-            return false;
+            return 0;
     }
 }
 
@@ -102,7 +103,7 @@ void AddNewMember()
     WaitForKey();
 }
 
-bool DeleteMember()
+void DeleteMember()
 {
     const string menu = @"1 - Po ID-ju
 2 - Po imenu i prezimenu
@@ -114,14 +115,15 @@ bool DeleteMember()
     switch (option)
     {
         case '1':
-            return DeleteMemberById();
+            DeleteMemberById();
+            break;
         case '2':
         default:
-            return true;
+            return;
     }
 }
 
-bool DeleteMemberById()
+void DeleteMemberById()
 {
     int id = -1;
     bool idValid = false;
@@ -144,7 +146,6 @@ bool DeleteMemberById()
     }
 
     WaitForKey();
-    return idValid;
 }
 
 void PrintAllMembers()
