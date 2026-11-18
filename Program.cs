@@ -118,6 +118,8 @@ void DeleteMember()
             DeleteMemberById();
             break;
         case '2':
+            DeleteMemberByName();
+            break;
         default:
             return;
     }
@@ -142,9 +144,39 @@ void DeleteMemberById()
     } catch (ArgumentOutOfRangeException)
     {
         Console.WriteLine("Navedeni clan ne postoji.");
-        idValid = false;
     }
 
+    WaitForKey();
+}
+
+
+void DeleteMemberByName()
+{
+    Console.Clear();
+
+    var name = "";
+    var surname = "";
+    while (name == "")
+    {
+        Console.Write("Unesite ime: ");
+        name = Console.ReadLine();
+    }
+    while (surname == "")
+    {
+        Console.Write("Unesite prezime: ");
+        surname = Console.ReadLine();
+    }
+
+    var firstMember = members.Find(m => m.name == name && m.surname == surname);
+    if (firstMember != default(Member))
+    {
+        Console.WriteLine($"Clan [{members.IndexOf(firstMember)}] uspjesno izbrisan.");
+        members.Remove(firstMember);
+    }
+    else
+    {
+        Console.WriteLine("Clan nije pronaden.");
+    }
     WaitForKey();
 }
 
