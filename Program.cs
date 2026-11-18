@@ -170,7 +170,7 @@ void DeleteMemberByName()
     var firstMember = members.Find(m => m.name == name && m.surname == surname);
     if (firstMember != default(Member))
     {
-        Console.WriteLine($"Clan [{members.IndexOf(firstMember)}] uspjesno izbrisan.");
+        Console.WriteLine($"Clan [{firstMember.id}] uspjesno izbrisan.");
         members.Remove(firstMember);
     }
     else
