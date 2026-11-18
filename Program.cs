@@ -19,7 +19,7 @@ while (true)
     switch (option)
     {
         case '1':
-            StartMembersMenu();
+            StartMembersMenuLoop();
             break;
         case '2':
         case '3':
@@ -29,12 +29,12 @@ while (true)
     }
 }
 
-void StartMembersMenu()
+void StartMembersMenuLoop()
 {
-    while (MembersMenuLoop()) ;
+    while (LoopMembersMenu()) ;
 }
 
-bool MembersMenuLoop()
+bool LoopMembersMenu()
 {
     const string menu = @"1 - Unos novog člana
 2 - Brisanje člana
@@ -101,7 +101,7 @@ void AddNewMember()
         new List<(string title, string author, DateOnly borrowDate)>()));
 
     Console.WriteLine("Unos je uspjesan.");
-    WaitKey();
+    WaitForKey();
 }
 
 bool DeleteMember()
@@ -145,7 +145,7 @@ bool DeleteMemberById()
         idValid = false;
     }
 
-    WaitKey();
+    WaitForKey();
     return idValid;
 }
 
@@ -159,10 +159,10 @@ void PrintAllMembers()
         Console.WriteLine($"[{members.IndexOf(member)}] {member.surname}, {member.name} ({DateTime.Now.AddYears(-member.dob.Year).Year})");
     }
 
-    WaitKey();
+    WaitForKey();
 }
 
-void WaitKey()
+void WaitForKey()
 {
     Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
     Console.ReadKey();
