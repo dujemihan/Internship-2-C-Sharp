@@ -8,49 +8,25 @@
 
 while (true)
 {
-    bool reset = false;
-
-    PrintMainMenu();
-    while (!reset)
-    {
-        PrintPrompt();
-        var input = Console.ReadKey();
-        switch (input.KeyChar)
-        {
-            case '1':
-                StartMembersMenu();
-                reset = true;
-                break;
-            case '2':
-                reset = true;
-                break;
-            case '3':
-                reset = true;
-                break;
-            case '0':
-                return;
-            default:
-                Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
-                break;
-        }
-    }
-}
-
-static void PrintMainMenu()
-{
     const string menu = @"1 - Članovi
 2 - Posudba
 3 - Statistika
 0 - Izlaz
 ";
+    char[] allowed = { '1', '2', '3', '4' };
+    char option = ShowMenu(menu, allowed);
 
-    Console.Clear();
-    Console.WriteLine(menu);
-}
-
-static void PrintPrompt()
-{
-    Console.Write("Odaberite opciju: ");
+    switch (option)
+    {
+        case '1':
+            StartMembersMenu();
+            break;
+        case '2':
+        case '3':
+            break;
+        case '0':
+            return;
+    }
 }
 
 void StartMembersMenu()
@@ -66,33 +42,23 @@ bool MembersMenuLoop()
 4 - Pregled svih članova
 0 - Povratak na glavni izbornik
 ";
-    const string prompt = "Odaberite opciju: ";
+    char[] allowed = { '1', '2', '3', '4' };
+    char option = ShowMenu(menu, allowed);
 
-    Console.Clear();
-    Console.WriteLine(menu);
-    while (true)
+    switch (option)
     {
-        Console.Write(prompt);
-        var input = Console.ReadKey();
-
-        switch (input.KeyChar)
-        {
-            case '1':
-                AddNewMember();
-                return true;
-            case '2':
-                return DeleteMember();
-            case '3':
-                return true;
-            case '4':
-                PrintAllMembers();
-                return true;
-            case '0':
-                return false;
-            default:
-                Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
-                break;
-        }
+        case '1':
+            AddNewMember();
+            return true;
+        case '2':
+            return DeleteMember();
+        case '3':
+            return true;
+        case '4':
+            PrintAllMembers();
+            return true;
+        default:
+            return false;
     }
 }
 
@@ -144,25 +110,16 @@ bool DeleteMember()
 2 - Po imenu i prezimenu
 0 - Povratak
 ";
-    const string prompt = "Odaberite opciju: ";
-
-    Console.Clear();
-    Console.WriteLine(menu);
-    while (true)
+    char[] allowed = { '1', '2' };
+    char option = ShowMenu(menu, allowed);
+    
+    switch (option)
     {
-        Console.Write(prompt);
-        var input = Console.ReadKey();
-
-        switch (input.KeyChar)
-        {
-            case '1':
-                return DeleteMemberById();
-            case '2':
-                return true;
-            default:
-                Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
-                break;
-        }
+        case '1':
+            return DeleteMemberById();
+        case '2':
+        default:
+            return true;
     }
 }
 
@@ -209,4 +166,21 @@ void WaitKey()
 {
     Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
     Console.ReadKey();
+}
+
+char ShowMenu(in string menu, char[] allowedOptions)
+{
+    Console.Clear();
+    Console.WriteLine(menu);
+
+    while (true)
+    {
+        Console.Write("Odaberite opciju: ");
+        char option = Console.ReadKey().KeyChar;
+        if (option == '0' || allowedOptions.Contains(option))
+            return option;
+
+        Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
+        Console.ReadKey();
+    }
 }
