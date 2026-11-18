@@ -187,10 +187,22 @@ void PrintAllMembers()
 
     foreach (var member in members)
     {
-        Console.WriteLine($"[{member.id}] {member.surname}, {member.name} ({DateTime.Now.AddYears(-member.dob.Year).Year})");
+        Console.WriteLine($"[{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)})");
     }
 
     WaitForKey();
+}
+
+int GetMemberAge(in Member member)
+{
+    var dob = member.dob;
+    var today = DateTime.Today;
+    var age = today.Year - dob.Year;
+
+    if (dob.DayOfYear > today.DayOfYear)
+        age--;
+
+    return age;
 }
 
 void WaitForKey()
