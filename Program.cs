@@ -53,6 +53,7 @@ int LoopMembersMenu()
             DeleteMember();
             return 1;
         case '3':
+            StartEditMemberMenu();
             return 1;
         case '4':
             PrintAllMembers();
@@ -196,6 +197,61 @@ void DeleteFoundMember(in Member member)
     }
 }
 
+void StartEditMemberMenu()
+{
+    int id = -1;
+    bool idValid = false;
+
+    Console.Clear();
+    while (!idValid)
+    {
+        Console.Write("Unesite ID clana: ");
+        idValid = int.TryParse(Console.ReadLine(), out id);
+    }
+
+    var firstMember = members.Find(m => m.id == id);
+    if (firstMember != default(Member))
+    {
+        EditMember(ref firstMember);
+    }
+    else
+    {
+        Console.WriteLine("Navedeni clan ne postoji.");
+    }
+
+    WaitForKey();
+}
+
+void EditMember(ref Member member)
+{
+    Console.WriteLine($"Pronađen član [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)})");
+
+    Console.Write("Unesite novo ime (prazno = nema promjene): ");
+    var name = Console.ReadLine() ?? member.name;
+    Console.Write("Unesite novo prezime (prazno = nema promjene): ");
+    var surname = Console.ReadLine() ?? member.surname;
+    Console.Write("Unesite novi datum rođenja (prazno = nema promjene): ");
+    var dobValid = DateOnly.TryParse(Console.ReadLine(), out var dob) && dob <= DateOnly.FromDateTime(DateTime.Today);
+
+    while (true)
+    {
+        Console.Write($"Član će se urediti u {surname}, {name} ({_GetMemberAge(dobValid ? dob : member.dob)}). Jeste li sigurni? (Y/N) ");
+        var key = Console.ReadKey().KeyChar;
+        Console.WriteLine("");
+
+        if (key == 'y' || key == 'Y')
+        {
+            member.name = name;
+            member.surname = surname;
+            member.dob = dobValid ? dob : member.dob;
+            Console.WriteLine("Izmjena uspješna.");
+            break;
+        }
+        else if (key == 'n' || key == 'N')
+            break;
+    }
+}
+
 void PrintAllMembers()
 {
     Console.Clear();
@@ -211,7 +267,11 @@ void PrintAllMembers()
 
 int GetMemberAge(in Member member)
 {
-    var dob = member.dob;
+    return _GetMemberAge(member.dob);
+}
+
+int _GetMemberAge(in DateOnly dob)
+{
     var today = DateTime.Today;
     var age = today.Year - dob.Year;
 
