@@ -66,7 +66,6 @@ void AddNewMember()
 {
     var name = "";
     var surname = "";
-    var dateString = "";
     DateOnly date;
 
     Console.Clear();
@@ -87,12 +86,12 @@ void AddNewMember()
     while (true)
     {
         Console.Write("Unesite datum rodenja (YYYY-MM-DD): ");
-        dateString = Console.ReadLine() ?? "";
+        var dateString = Console.ReadLine() ?? "";
 
         if (!DateOnly.TryParse(dateString, out date))
-        {
             Console.WriteLine("Neispravan unos datuma, molimo pokusajte ponovno.");
-        }
+        else if (date > DateOnly.FromDateTime(DateTime.Today))
+            Console.WriteLine("Datum rođenja ne može biti u budućnosti!");
         else
             break;
     }
