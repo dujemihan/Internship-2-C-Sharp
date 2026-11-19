@@ -86,11 +86,11 @@ void AddNewMember()
     }
     while (true)
     {
-        Console.Write("Unesite datum rodenja (YYYY-MM-DD): ");
+        Console.Write("Unesite datum rođenja (YYYY-MM-DD): ");
         var dateString = Console.ReadLine() ?? "";
 
         if (!DateOnly.TryParse(dateString, out date))
-            Console.WriteLine("Neispravan unos datuma, molimo pokusajte ponovno.");
+            Console.WriteLine("Neispravan unos datuma, molimo pokušajte ponovno.");
         else if (date > DateOnly.FromDateTime(DateTime.Today))
             Console.WriteLine("Datum rođenja ne može biti u budućnosti!");
         else
@@ -100,7 +100,7 @@ void AddNewMember()
     members.Add((new Random().Next(), name, surname, date,
         new List<Borrow>()));
 
-    Console.WriteLine("Unos je uspjesan.");
+    Console.WriteLine("Unos je uspješan.");
     WaitForKey();
 }
 
@@ -144,7 +144,7 @@ void DeleteMemberById()
     }
     else
     {
-        Console.WriteLine("Navedeni clan ne postoji.");
+        Console.WriteLine("Navedeni član ne postoji.");
     }
 
     WaitForKey();
@@ -174,7 +174,7 @@ void DeleteMemberByName()
     }
     else
     {
-        Console.WriteLine("Navedeni clan ne postoji.");
+        Console.WriteLine("Navedeni član ne postoji.");
     }
     WaitForKey();
 }
@@ -183,7 +183,7 @@ void DeleteFoundMember(in Member member)
 {
     while (true)
     {
-        Console.Write($"Pronaden clan [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Zelite li ga izbrisati? (Y/N) ");
+        Console .Write($"Pronađen član [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Želite li ga izbrisati? (Y/N) ");
         var key = Console.ReadKey().KeyChar;
         Console.WriteLine();
         if (key == 'y' || key == 'Y')
@@ -197,7 +197,7 @@ void DeleteFoundMember(in Member member)
                 }
             }
             members.Remove(member);
-            Console.WriteLine("Clan uspjesno izbrisan.");
+            Console.WriteLine("Član uspješno izbrisan.");
             return;
         }
         else if (key == 'n' || key == 'N')
@@ -213,7 +213,7 @@ void StartEditMemberMenu()
     Console.Clear();
     while (!idValid)
     {
-        Console.Write("Unesite ID clana: ");
+        Console.Write("Unesite ID člana: ");
         idValid = int.TryParse(Console.ReadLine(), out id);
     }
 
@@ -224,7 +224,7 @@ void StartEditMemberMenu()
     }
     else
     {
-        Console.WriteLine("Navedeni clan ne postoji.");
+        Console.WriteLine("Navedeni član ne postoji.");
     }
 
     WaitForKey();
@@ -263,7 +263,7 @@ void EditMember(ref Member member)
 void PrintAllMembers()
 {
     Console.Clear();
-    Console.WriteLine("Popis clanova:");
+    Console.WriteLine("Popis članova:");
 
     foreach (var member in members)
     {
