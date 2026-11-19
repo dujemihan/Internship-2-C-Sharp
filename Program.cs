@@ -188,6 +188,14 @@ void DeleteFoundMember(in Member member)
         Console.WriteLine();
         if (key == 'y' || key == 'Y')
         {
+            foreach (var borrow in member.borrows)
+            {
+                if (!borrow.returned)
+                {
+                    Console.WriteLine("Nije moguće izbrisati člana s nevraćenim knjigama!");
+                    return;
+                }
+            }
             members.Remove(member);
             Console.WriteLine("Clan uspjesno izbrisan.");
             return;
