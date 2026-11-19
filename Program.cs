@@ -140,20 +140,7 @@ void DeleteMemberById()
     var firstMember = members.Find(m => m.id == id);
     if (firstMember != default(Member))
     {
-        while (true)
-        {
-            Console.Write($"Pronaden clan {firstMember.surname}, {firstMember.name}. Zelite li ga izbrisati? (Y/N) ");
-            var key = Console.ReadKey().KeyChar;
-            Console.WriteLine("");
-            if (key == 'y' || key == 'Y')
-            {
-                members.Remove(firstMember);
-                Console.WriteLine("Clan uspjesno izbrisan.");
-                break;
-            }
-            else if (key == 'n' || key == 'N')
-                break;
-        }
+        DeleteFoundMember(firstMember);
     }
     else
     {
@@ -183,26 +170,31 @@ void DeleteMemberByName()
     var firstMember = members.Find(m => m.name == name && m.surname == surname);
     if (firstMember != default(Member))
     {
-        while (true)
-        {
-            Console.Write($"Pronaden clan [{firstMember.id}]. Zelite li ga izbrisati? (Y/N) ");
-            var key = Console.ReadKey().KeyChar;
-            Console.WriteLine("");
-            if (key == 'y' || key == 'Y')
-            {
-                members.Remove(firstMember);
-                Console.WriteLine("Clan uspjesno izbrisan.");
-                break;
-            }
-            else if (key == 'n' || key == 'N')
-                break;
-        }
+        DeleteFoundMember(firstMember);
     }
     else
     {
         Console.WriteLine("Navedeni clan ne postoji.");
     }
     WaitForKey();
+}
+
+void DeleteFoundMember(Member member)
+{
+    while (true)
+    {
+        Console.Write($"Pronaden clan [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Zelite li ga izbrisati? (Y/N) ");
+        var key = Console.ReadKey().KeyChar;
+        Console.WriteLine("");
+        if (key == 'y' || key == 'Y')
+        {
+            members.Remove(member);
+            Console.WriteLine("Clan uspjesno izbrisan.");
+            return;
+        }
+        else if (key == 'n' || key == 'N')
+            return;
+    }
 }
 
 void PrintAllMembers()
