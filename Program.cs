@@ -178,7 +178,7 @@ void DeleteMemberByName()
     WaitForKey();
 }
 
-void DeleteFoundMember(Member member)
+void DeleteFoundMember(in Member member)
 {
     while (true)
     {
