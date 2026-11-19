@@ -21,6 +21,8 @@ while (true)
             StartMembersMenuLoop();
             break;
         case '2':
+            StartBorrowsMenuLoop();
+            break;
         case '3':
             break;
         case '0':
@@ -61,6 +63,69 @@ int LoopMembersMenu()
         default:
             return 0;
     }
+}
+
+void StartBorrowsMenuLoop()
+{
+    while (LoopBorrowsMenu() != 0) ;
+}
+
+int LoopBorrowsMenu()
+{
+    const string menu = @"1 - Unos nove posudbe
+2 - Vraćanje knjige
+3 - Brisanje posudbe
+4 - Uređivanje postojeće posudbe
+5 - Pregled svih posudbi
+6 - Izvještaji i analize
+0 - Povratak na glavni izbornik
+";
+    char[] allowed = ['1', '2', '3', '4', '5', '6'];
+    char option = ShowMenu(menu, allowed);
+
+    switch (option)
+    {
+        case '1':
+            AddNewBorrow();
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+void AddNewBorrow()
+{
+    Console.Clear();
+
+    if (!HasChosenMemberFromList(out var member)) ;
+
+    WaitForKey();
+}
+
+bool HasChosenMemberFromList(out Member? member)
+{
+    if (members.Count == 0)
+    {
+        Console.WriteLine("Nema članova, molimo unesite člana.");
+        member = null;
+        return false;
+    }
+
+    for (int i = 0; i < members.Count; i++)
+    {
+        Console.WriteLine($"{i + 1}. [{members[i].id}] {members[i].surname}, {members[i].name} ({GetMemberAge(members[i])})");
+    }
+
+    int choice;
+    while (true)
+    {
+        Console.Write("\nUnesite člana: ");
+        if (int.TryParse(Console.ReadLine(), out choice) && choice > 0 && choice <= members.Count)
+            break;
+    }
+
+    member = members[choice - 1];
+    return true;
 }
 
 void AddNewMember()
