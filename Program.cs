@@ -184,7 +184,7 @@ void DeleteFoundMember(in Member member)
     {
         Console.Write($"Pronaden clan [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Zelite li ga izbrisati? (Y/N) ");
         var key = Console.ReadKey().KeyChar;
-        Console.WriteLine("");
+        Console.WriteLine();
         if (key == 'y' || key == 'Y')
         {
             members.Remove(member);
@@ -236,10 +236,10 @@ char ShowMenu(in string menu, in char[] allowedOptions)
     {
         Console.Write("Odaberite opciju: ");
         char option = Console.ReadKey().KeyChar;
+        Console.WriteLine();
         if (option == '0' || allowedOptions.Contains(option))
             return option;
 
         Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
-        Console.ReadKey();
     }
 }
