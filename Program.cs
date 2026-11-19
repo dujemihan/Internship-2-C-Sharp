@@ -12,7 +12,7 @@ while (true)
 3 - Statistika
 0 - Izlaz
 ";
-    char[] allowed = { '1', '2', '3', '4' };
+    char[] allowed = ['1', '2', '3', '4'];
     char option = ShowMenu(menu, allowed);
 
     switch (option)
@@ -41,7 +41,7 @@ int LoopMembersMenu()
 4 - Pregled svih članova
 0 - Povratak na glavni izbornik
 ";
-    char[] allowed = { '1', '2', '3', '4' };
+    char[] allowed = ['1', '2', '3', '4'];
     char option = ShowMenu(menu, allowed);
 
     switch (option)
@@ -109,7 +109,7 @@ void DeleteMember()
 2 - Po imenu i prezimenu
 0 - Povratak
 ";
-    char[] allowed = { '1', '2' };
+    char[] allowed = ['1', '2'];
     char option = ShowMenu(menu, allowed);
     
     switch (option)
