@@ -304,7 +304,8 @@ void StartPrintBorrowsMenuLoop()
             case '5':
                 {
                     var term = ReadRequiredString("Unesite pojam za pretragu", "Molimo unesite pojam!");
-                    var results = borrows.Where(b => b.author.Contains(term, StringComparison.CurrentCultureIgnoreCase) || b.title.Contains(term, StringComparison.CurrentCultureIgnoreCase));
+                    var results = borrows.Where(b => b.author.Contains(term,
+                        StringComparison.CurrentCultureIgnoreCase) || b.title.Contains(term, StringComparison.CurrentCultureIgnoreCase));
                     Console.WriteLine("Rezultati pretrage:");
                     PrintBorrows(results);
                     break;
