@@ -123,12 +123,19 @@ void DeleteBorrow()
 {
     Console.Clear();
 
-    if (!HasChosenBorrowFromList(out var borrow))
+    int id, index;
+    while (!int.TryParse(ReadRequiredString("Unesite ID posudbe", "Molimo unesite ID!"), out id)) ;
+
+    index = borrows.FindIndex(b => b.id == id);
+    if (index < 0)
     {
+        Console.WriteLine("Posudba ne postoji.");
         WaitForKey();
         return;
     }
-    else if (borrow.returnDate == null)
+
+    var borrow = borrows[index];
+    if (borrow.returnDate == null)
     {
         Console.WriteLine("Nije moguće izbrisati nezaključenu posudbu!");
         WaitForKey();
@@ -138,7 +145,7 @@ void DeleteBorrow()
     PrintBorrow(borrow, null);
     if (IsPromptPositive("Želite li izbrisati ovu posudbu?"))
     {
-        borrows.Remove(borrow);
+        borrows.RemoveAt(index);
         Console.WriteLine("Posudba uspješno izbrisana.");
     }
 
@@ -255,31 +262,6 @@ bool HasChosenMemberFromList(out Member member)
     }
 
     member = members[choice - 1];
-    return true;
-}
-
-bool HasChosenBorrowFromList(out Borrow borrow)
-{
-    borrow = default;
-    if (borrows.Count == 0)
-    {
-        Console.WriteLine("Nema posudbi, molimo unesite posudbu.");
-        return false;
-    }
-
-    PrintBorrows();
-
-    int choice;
-    while (true)
-    {
-        Console.Write("\nUnesite posudbu (prazno za odustajanje): ");
-        if (int.TryParse(Console.ReadLine(), out choice) && choice > 0 && choice <= borrows.Count)
-            break;
-        else if (choice == 0)
-            return false;
-    }
-
-    borrow = borrows[choice - 1];
     return true;
 }
 
