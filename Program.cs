@@ -160,10 +160,55 @@ void StartDeleteBorrowMenu()
             case '2':
                 DeleteBorrowsByMember();
                 break;
+            case '3':
+                DeleteBorrowsByFee();
+                break;
             default:
                 return;
         }
     }
+}
+
+void DeleteBorrowsByFee()
+{
+    List<Borrow> targetBorrows = [];
+
+    double threshold;
+    while (!double.TryParse(ReadRequiredString("Unesite decimalan prag u €", "Molimo unesite prag!"), out threshold)) ;
+    if (threshold <= 0)
+    {
+        Console.WriteLine("Prag je 0 ili negativan, odustajanje");
+        WaitForKey();
+        return;
+    }
+
+    foreach (var borrow in borrows)
+    {
+        var compDate = borrow.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+        var isLate = IsLate(borrow, compDate, out int days);
+
+        if (isLate && days >= threshold * 2)
+        {
+            targetBorrows.Add(borrow);
+            PrintBorrow(borrow, borrow.returnDate);
+        }
+    }
+
+    if (targetBorrows.Count < 1)
+    {
+        Console.WriteLine("Nema posudbi iznad navedenog praga.");
+        WaitForKey();
+        return;
+    }
+
+    if (IsPromptPositive("Želite li izbrisati ove posudbe?"))
+    {
+        foreach (var borrow in targetBorrows)
+            borrows.Remove(borrow);
+        Console.WriteLine("Posudbe uspješno izbrisane.");
+    }
+
+    WaitForKey();
 }
 
 void DeleteBorrowsByMember()
@@ -359,7 +404,7 @@ void PrintBorrows()
 
 void PrintBorrow(in Borrow b, DateOnly? returnDate)
 {
-    var compDate = returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+    var compDate = b.returnDate ?? returnDate ?? DateOnly.FromDateTime(DateTime.Today);
     var isLate = IsLate(b, compDate, out int days);
 
     Console.WriteLine($"[{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate != null ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €")} ");
