@@ -86,7 +86,7 @@ int LoopMembersMenu()
 
                 foreach (var borrow in borrows)
                 {
-                    if (memberId == borrow.memberId && borrow.returnDate == null)
+                    if (memberId == borrow.memberId && !borrow.returnDate.HasValue)
                     {
                         PrintMember(member);
                         break;
@@ -229,7 +229,7 @@ void DeleteBorrowsByMember()
     List<Borrow> targetBorrows = [];
     foreach(var borrow in borrows)
     {
-        if (borrow.memberId == id && borrow.returnDate != null)
+        if (borrow.memberId == id && !borrow.returnDate.HasValue)
         {
             targetBorrows.Add(borrow);
             PrintBorrow(borrow, borrow.returnDate);
@@ -262,7 +262,7 @@ void DeleteBorrowById()
     }
 
     var borrow = borrows[index];
-    if (borrow.returnDate == null)
+    if (borrow.returnDate.HasValue)
     {
         Console.WriteLine("Nije moguće izbrisati nezaključenu posudbu!");
         WaitForKey();
@@ -398,7 +398,7 @@ void PrintBorrows()
     {
         var b = borrows[i];
         Console.Write($"{i + 1}. ");
-        PrintBorrow(b, null);
+        PrintBorrow(b, b.returnDate);
     }
 }
 
@@ -407,7 +407,7 @@ void PrintBorrow(in Borrow b, DateOnly? returnDate)
     var compDate = b.returnDate ?? returnDate ?? DateOnly.FromDateTime(DateTime.Today);
     var isLate = IsLate(b, compDate, out int days);
 
-    Console.WriteLine($"[{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate != null ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €")} ");
+    Console.WriteLine($"[{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate.HasValue ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €")} ");
 }
 
 bool IsLate(in Borrow borrow, DateOnly returnDate, out int days)
@@ -516,7 +516,7 @@ void DeleteFoundMember(in Member member)
     {
         foreach (var borrow in borrows)
         {
-            if (borrow.memberId == member.id && borrow.returnDate == null)
+            if (borrow.memberId == member.id && !borrow.returnDate.HasValue)
             {
                 Console.WriteLine("Nije moguće izbrisati člana s nevraćenim knjigama!");
                 return;
@@ -657,7 +657,7 @@ string ReadRequiredString(string prompt, string? invalidMsg)
 
         if (string.IsNullOrWhiteSpace(str))
         {
-            if (invalidMsg != null)
+            if (invalidMsg is not null)
                 Console.WriteLine(invalidMsg);
         }
         else
