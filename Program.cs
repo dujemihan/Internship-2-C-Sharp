@@ -1,4 +1,5 @@
-﻿using Borrow = (int id, int memberId, string title, string author, System.DateOnly borrowDate, bool returned);
+﻿using System.Text;
+using Borrow = (int id, int memberId, string title, string author, System.DateOnly borrowDate, System.DateOnly? returnDate);
 using Member = (int id, string name, string surname, System.DateOnly dob);
 var members = new List<Member>
 {
@@ -6,6 +7,8 @@ var members = new List<Member>
 var borrows = new List<Borrow>
 {
 };
+
+Console.OutputEncoding = Encoding.UTF8;
 
 while (true)
 {
@@ -99,17 +102,56 @@ void AddNewBorrow()
 {
     Console.Clear();
 
-    if (!HasChosenMemberFromList(out var member)) ;
+    if (!HasChosenMemberFromList(out var member))
+    {
+        WaitForKey();
+        return;
+    }
+
+    string author = "";
+    string title = "";
+    DateOnly borrowDate;
+
+    while (title == "")
+    {
+        Console.Write("Unesite naslov knjige: ");
+        title = Console.ReadLine() ?? "";
+    }
+
+    while (author == "")
+    {
+        Console.Write("Unesite autora knjige: ");
+        author = Console.ReadLine() ?? "";
+    }
+
+    while (true)
+    {
+        Console.Write("Unesite datum posudbe (YYYY-MM-DD): ");
+        if (!DateOnly.TryParse(Console.ReadLine(), out borrowDate))
+        {
+            Console.WriteLine("Neispravan unos datuma, molimo pokušajte ponovno.");
+        }
+        else if (borrowDate > DateOnly.FromDateTime(DateTime.Today))
+        {
+            Console.WriteLine("Datum posudbe ne može biti u budućnosti!");
+        }
+        else
+            break;
+    }
+
+    borrows.Add((new Random().Next(), member.id, title, author, borrowDate, null));
+    Console.WriteLine("Posudba uspješno dodana.");
 
     WaitForKey();
 }
 
-bool HasChosenMemberFromList(out Member? member)
+bool HasChosenMemberFromList(out Member member)
 {
+    member = default;
+
     if (members.Count == 0)
     {
         Console.WriteLine("Nema članova, molimo unesite člana.");
-        member = null;
         return false;
     }
 
@@ -121,9 +163,11 @@ bool HasChosenMemberFromList(out Member? member)
     int choice;
     while (true)
     {
-        Console.Write("\nUnesite člana: ");
+        Console.Write("\nUnesite člana (prazno za odustajanje): ");
         if (int.TryParse(Console.ReadLine(), out choice) && choice > 0 && choice <= members.Count)
             break;
+        else if (choice == 0)
+            return false;
     }
 
     member = members[choice - 1];
@@ -256,7 +300,7 @@ void DeleteFoundMember(in Member member)
         {
             foreach (var borrow in borrows)
             {
-                if (borrow.memberId == member.id && !borrow.returned)
+                if (borrow.memberId == member.id && borrow.returnDate == null)
                 {
                     Console.WriteLine("Nije moguće izbrisati člana s nevraćenim knjigama!");
                     return;
