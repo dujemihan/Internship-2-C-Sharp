@@ -129,6 +129,9 @@ int LoopBorrowsMenu()
         case '3':
             StartDeleteBorrowMenu();
             return 1;
+        case '4':
+            EditBorrow();
+            return 1;
         case '5':
             {
                 Console.Clear();
@@ -139,6 +142,48 @@ int LoopBorrowsMenu()
         default:
             return 0;
     }
+}
+
+void EditBorrow()
+{
+    int id;
+
+    while (!int.TryParse(ReadRequiredString("Unesite ID posudbe", "Molimo unesite ID!"), out id)) ;
+
+    var borrow = borrows.Find(b => b.id == id);
+    if (borrow == default)
+    {
+        Console.WriteLine("Posudba ne postoji.");
+        WaitForKey();
+        return;
+    }
+    var borrowIndex = borrows.IndexOf(borrow);
+
+    PrintBorrow(borrow, null);
+
+    Console.Write("Unesite novi naslov (prazno = nema promjene): ");
+    var titleInput = Console.ReadLine()?.Trim();
+    var title = string.IsNullOrWhiteSpace(titleInput) ? borrow.title : titleInput;
+    Console.Write("Unesite novog autora (prazno = nema promjene): ");
+    var authorInput = Console.ReadLine()?.Trim();
+    var author = string.IsNullOrWhiteSpace(authorInput) ? borrow.author : authorInput;
+    Console.Write("Unesite novi datum posudbe (prazno ili nevaljano = nema promjene): ");
+    if (!DateOnly.TryParse(Console.ReadLine()?.Trim(), out var borrowDate))
+        borrowDate = borrow.borrowDate;
+
+    borrow.title = title;
+    borrow.author = author;
+    borrow.borrowDate = borrowDate;
+
+    PrintBorrow(borrow, null);
+
+    if (IsPromptPositive("Želite li promijeniti posudbu?"))
+    {
+        borrows[borrowIndex] = borrow;
+        Console.WriteLine("Promjena uspješna.");
+    }
+
+    WaitForKey();
 }
 
 void StartDeleteBorrowMenu()
