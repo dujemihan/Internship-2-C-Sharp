@@ -283,10 +283,12 @@ void StartEditMemberMenu()
         idValid = int.TryParse(Console.ReadLine(), out id);
     }
 
-    var firstMember = members.Find(m => m.id == id);
-    if (firstMember != default(Member))
+    int memberIndex = members.FindIndex(m => m.id == id);
+    if (memberIndex >= 0)
     {
-        EditMember(ref firstMember);
+        var member = members[memberIndex];
+        EditMember(ref member);
+        members[memberIndex] = member;
     }
     else
     {
