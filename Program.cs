@@ -3,9 +3,18 @@ using Borrow = (int id, int memberId, string title, string author, System.DateOn
 using Member = (int id, string name, string surname, System.DateOnly dob);
 var members = new List<Member>
 {
+    (512369754, "Ante", "Antić", new DateOnly(2006, 5, 30)),
+    (574890313, "Mate", "Matić", new DateOnly(2005, 6, 12)),
+    (342780942, "Hrvoje", "Horvat", new DateOnly(2010, 11, 12))
 };
 var borrows = new List<Borrow>
 {
+    (48912778, 512369754, "Idiot", "Fjodor Mihajlovič Dostojevski", new DateOnly(2026, 3, 25), new DateOnly(2026, 4, 18)),
+    (48912779, 512369754, "Zločin i kazna", "Fjodor Mihajlovič Dostojevski", new DateOnly(2026, 9, 1), null),
+    (48912780, 574890313, "Na Drini ćuprija", "Ivo Andrić", new DateOnly(2026, 8, 10), new DateOnly(2026, 9, 2)),
+    (48912781, 574890313, "Mali princ", "Antoine de Saint-Exupéry", new DateOnly(2026, 9, 5), null),
+    (48912782, 342780942, "Prokleta avlija", "Ivo Andrić", new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 20)),
+    (48912783, 342780942, "Harry Potter i kamen mudraca", "J. K. Rowling", new DateOnly(2026, 8, 15), new DateOnly(2026, 9, 10))
 };
 
 Console.OutputEncoding = Encoding.UTF8;
