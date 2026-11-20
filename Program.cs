@@ -21,7 +21,9 @@ Console.OutputEncoding = Encoding.UTF8;
 
 while (true)
 {
-    const string menu = @"1 - Članovi
+    const string menu = @"PROGRAM ZA VOĐENJE KNJIŽNICE
+
+1 - Članovi
 2 - Posudba
 0 - Izlaz
 ";
@@ -45,7 +47,9 @@ while (true)
 
 void StartAnalyticsMenuLoop()
 {
-    const string menu = @"1 - Ukupan broj posudbi i broj nevraćenih knjiga
+    const string menu = @"IZVJEŠTAJI I ANALIZE
+
+1 - Ukupan broj posudbi i broj nevraćenih knjiga
 2 - Ukupna zakasnina
 3 - Prosječno trajanje posudbe
 4 - Posudba s najvećim kašnjenjem
@@ -134,7 +138,9 @@ void StartAnalyticsMenuLoop()
 
 void StartMembersMenuLoop()
 {
-    const string menu = @"1 - Unos novog člana
+    const string menu = @"ČLANOVI
+
+1 - Unos novog člana
 2 - Brisanje člana
 3 - Uređivanje člana
 4 - Pregled svih članova
@@ -187,7 +193,9 @@ void StartMembersMenuLoop()
 
 void StartBorrowsMenuLoop()
 {
-    const string menu = @"1 - Unos nove posudbe
+    const string menu = @"POSUDBE
+
+1 - Unos nove posudbe
 2 - Vraćanje knjige
 3 - Brisanje posudbe
 4 - Uređivanje postojeće posudbe
@@ -214,8 +222,7 @@ void StartBorrowsMenuLoop()
                 EditBorrow();
                 break;
             case '5':
-                Console.Clear();
-                PrintBorrows(borrows);
+                StartPrintBorrowsMenuLoop();
                 WaitForKey();
                 break;
             case '6':
@@ -225,6 +232,38 @@ void StartBorrowsMenuLoop()
             default:
                 return;
         }
+    }
+}
+
+void StartPrintBorrowsMenuLoop()
+{
+    const string menu = @"PREGLED SVIH POSUDBI
+
+1 - Sve posudbe po redu
+2 - Sortirane po datumu posudbe
+3 - Sortirano po zakasnini
+4 - Sve nevraćene posudbe
+5 - Pretraga po naslovu/autoru
+6 - Grupirane po mjesecu
+";
+    char[] allowed = ['1', '2', '3', '4', '5', '6'];
+
+    while (true)
+    {
+        switch (ShowMenu(menu, allowed))
+        {
+            case '1':
+                PrintBorrows(borrows);
+                break;
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            default:
+                return;
+        }
+        WaitForKey();
     }
 }
 
