@@ -256,6 +256,17 @@ void StartPrintBorrowsMenuLoop()
                 PrintBorrows(borrows);
                 break;
             case '2':
+                {
+                    IOrderedEnumerable<Borrow> sortedBorrows;
+
+                    if (IsPromptPositive("Želite li sortirati uzlazno?"))
+                        sortedBorrows = borrows.OrderBy(b => b.borrowDate);
+                    else
+                        sortedBorrows = borrows.OrderByDescending(b => b.borrowDate);
+
+                    PrintBorrows(sortedBorrows);
+                    break;
+                }
             case '3':
             case '4':
             case '5':
