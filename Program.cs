@@ -102,6 +102,9 @@ int LoopBorrowsMenu()
         case '1':
             AddNewBorrow();
             return 1;
+        case '2':
+            ReturnBook();
+            return 1;
         default:
             return 0;
     }
@@ -154,6 +157,48 @@ void AddNewBorrow()
     WaitForKey();
 }
 
+void ReturnBook()
+{
+    Console.Clear();
+
+    if (!HasChosenBorrowFromList(out var borrow))
+    {
+        WaitForKey();
+        return;
+    }
+
+    if (borrow.returnDate != default)
+    {
+        Console.WriteLine("Ova je posudba već zaključena!");
+        WaitForKey();
+        return;
+    }
+
+    DateOnly returnDate;
+    while (true)
+    {
+        Console.Write("Unesite datum vraćanja: ");
+        if (!DateOnly.TryParse(Console.ReadLine(), out returnDate))
+            Console.WriteLine("Neispravan unos datuma, molimo pokušajte ponovno.");
+        else if (returnDate < borrow.borrowDate)
+            Console.WriteLine("Nije moguće vratiti knjigu prije posudbe!");
+        else if (returnDate > DateOnly.FromDateTime(DateTime.Today))
+            Console.WriteLine("Datum vraćanja ne može biti u budućnosti!");
+        else
+            break;
+    }
+
+    borrow.returnDate = returnDate;
+    int borrowIndex = borrows.FindIndex(b => b.id == borrow.id);
+    if (borrowIndex >= 0)
+        borrows[borrowIndex] = borrow;
+
+    var isLate = IsLate(borrow, returnDate, out int days);
+    Console.WriteLine($"Knjiga uspješno vraćena. Vraćanje {(isLate ? $"je zakašnjelo {days} dana, a zakasnina iznosi {days * 0.5} €": "nije zakašnjelo")}.");
+
+    WaitForKey();
+}
+
 bool HasChosenMemberFromList(out Member member)
 {
     member = default;
@@ -181,6 +226,51 @@ bool HasChosenMemberFromList(out Member member)
 
     member = members[choice - 1];
     return true;
+}
+
+bool HasChosenBorrowFromList(out Borrow borrow)
+{
+    borrow = default;
+    if (borrows.Count == 0)
+    {
+        Console.WriteLine("Nema posudbi, molimo unesite posudbu.");
+        return false;
+    }
+     
+    for (int i = 0; i < borrows.Count; i++)
+    {
+        var b = borrows[i];
+        var returnDate = b.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+        var isLate = IsLate(b, returnDate, out int days);
+        Console.WriteLine($"{i + 1}. [{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate != null ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €" )} ");
+    }
+
+    int choice;
+    while (true)
+    {
+        Console.Write("\nUnesite posudbu (prazno za odustajanje): ");
+        if (int.TryParse(Console.ReadLine(), out choice) && choice > 0 && choice <= borrows.Count)
+            break;
+        else if (choice == 0)
+            return false;
+    }
+
+    borrow = borrows[choice - 1];
+    return true;
+}
+
+bool IsLate(in Borrow borrow, DateOnly returnDate, out int days)
+{
+    var deadline = borrow.borrowDate.AddDays(21);
+    days = 0;
+
+    if (deadline < returnDate)
+    {
+        days = (returnDate.DayNumber - deadline.DayNumber);
+        return true;
+    }
+    else
+        return false;
 }
 
 void AddNewMember()
