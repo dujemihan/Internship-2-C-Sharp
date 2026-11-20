@@ -127,7 +127,7 @@ int LoopBorrowsMenu()
             ReturnBook();
             return 1;
         case '3':
-            DeleteBorrow();
+            StartDeleteBorrowMenu();
             return 1;
         case '5':
             {
@@ -141,8 +141,27 @@ int LoopBorrowsMenu()
     }
 }
 
+void StartDeleteBorrowMenu()
+{
+    const string menu = @"1 - Po ID-ju
+2 - Sve vraćene određenog člana
+3 - Sve s zakasninom većom od iznosa
+0 - Povratak";
+    char[] allowed = ['1', '2', '3'];
 
-void DeleteBorrow()
+    while (true)
+    {
+        switch(ShowMenu(menu, allowed))
+        {
+            case '1':
+                DeleteBorrowById();
+                break;
+            default:
+                return;
+        }
+    }
+}
+void DeleteBorrowById()
 {
     Console.Clear();
 
