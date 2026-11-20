@@ -604,10 +604,8 @@ void EditMember(ref Member member)
 {
     Console.WriteLine($"Pronađen član [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)})");
 
-    Console.Write("Unesite novo ime (prazno = nema promjene): ");
-    var name = Console.ReadLine() ?? member.name;
-    Console.Write("Unesite novo prezime (prazno = nema promjene): ");
-    var surname = Console.ReadLine() ?? member.surname;
+    var name = ReadOptionalString("Unesite novo ime (prazno = nema promjene)", member.name);
+    var surname = ReadOptionalString("Unesite novo prezime (prazno = nema promjene)", member.surname);
     Console.Write("Unesite novi datum rođenja (prazno = nema promjene): ");
     var dobValid = DateOnly.TryParse(Console.ReadLine(), out var dob) && dob <= DateOnly.FromDateTime(DateTime.Today);
 
@@ -693,19 +691,27 @@ bool IsPromptPositive(in string prompt)
 
 string ReadRequiredString(string prompt, string? invalidMsg)
 {
-    string? str;
-
     while (true)
     {
-        Console.Write($"{prompt}: ");
-        str = Console.ReadLine();
+        var str = ReadOptionalString(prompt, "");
 
-        if (string.IsNullOrWhiteSpace(str))
+        if (str == "")
         {
             if (invalidMsg is not null)
                 Console.WriteLine(invalidMsg);
         }
         else
-            return str.Trim();
+            return str;
     }
+}
+
+string ReadOptionalString(string prompt, string fallback)
+{
+    Console.Write($"{prompt}: ");
+    var str = Console.ReadLine()?.Trim();
+
+    if (string.IsNullOrWhiteSpace(str))
+        return fallback;
+    else
+        return str;
 }
