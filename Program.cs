@@ -1,7 +1,9 @@
-﻿using Borrow = (int id, string title, string author, System.DateOnly borrowDate, bool returned);
-using Member = (int id, string name, string surname, System.DateOnly dob,
-    System.Collections.Generic.List<(int id, string title, string author, System.DateOnly borrowDate, bool returned)> borrows);
+﻿using Borrow = (int id, int memberId, string title, string author, System.DateOnly borrowDate, bool returned);
+using Member = (int id, string name, string surname, System.DateOnly dob);
 var members = new List<Member>
+{
+};
+var borrows = new List<Borrow>
 {
 };
 
@@ -162,8 +164,7 @@ void AddNewMember()
             break;
     }
 
-    members.Add((new Random().Next(), name, surname, date,
-        new List<Borrow>()));
+    members.Add((new Random().Next(), name, surname, date));
 
     Console.WriteLine("Unos je uspješan.");
     WaitForKey();
@@ -253,9 +254,9 @@ void DeleteFoundMember(in Member member)
         Console.WriteLine();
         if (key == 'y' || key == 'Y')
         {
-            foreach (var borrow in member.borrows)
+            foreach (var borrow in borrows)
             {
-                if (!borrow.returned)
+                if (borrow.memberId == member.id && !borrow.returned)
                 {
                     Console.WriteLine("Nije moguće izbrisati člana s nevraćenim knjigama!");
                     return;
