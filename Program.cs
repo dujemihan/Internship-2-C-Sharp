@@ -108,10 +108,16 @@ int LoopBorrowsMenu()
         case '3':
             DeleteBorrow();
             return 1;
+        case '5':
+            Console.Clear();
+            PrintBorrows();
+            WaitForKey();
+            return 1;
         default:
             return 0;
     }
 }
+
 
 void DeleteBorrow()
 {
