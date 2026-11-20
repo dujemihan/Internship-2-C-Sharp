@@ -150,26 +150,13 @@ void AddNewBorrow()
         return;
     }
 
-    string author = "";
-    string title = "";
     DateOnly borrowDate;
-
-    while (title == "")
-    {
-        Console.Write("Unesite naslov knjige: ");
-        title = Console.ReadLine() ?? "";
-    }
-
-    while (author == "")
-    {
-        Console.Write("Unesite autora knjige: ");
-        author = Console.ReadLine() ?? "";
-    }
+    var title = ReadRequiredString("Unesite naslov knjige", "Molimo unesite naslov!");
+    var author = ReadRequiredString("Unesite autora knjige", "Molimo unesite autora!");
 
     while (true)
     {
-        Console.Write("Unesite datum posudbe (YYYY-MM-DD): ");
-        if (!DateOnly.TryParse(Console.ReadLine(), out borrowDate))
+        if (!DateOnly.TryParse(ReadRequiredString("Unesite datum posudbe (YYYY-MM-DD)", "Molimo unesite datum!"), out borrowDate))
         {
             Console.WriteLine("Neispravan unos datuma, molimo pokušajte ponovno.");
         }
@@ -207,8 +194,7 @@ void ReturnBook()
     DateOnly returnDate;
     while (true)
     {
-        Console.Write("Unesite datum vraćanja: ");
-        if (!DateOnly.TryParse(Console.ReadLine(), out returnDate))
+        if (!DateOnly.TryParse(ReadRequiredString("Unesite datum vraćanja", "Molimo unesite datum!"), out returnDate))
             Console.WriteLine("Neispravan unos datuma, molimo pokušajte ponovno.");
         else if (returnDate < borrow.borrowDate)
             Console.WriteLine("Nije moguće vratiti knjigu prije posudbe!");
@@ -308,7 +294,7 @@ bool IsLate(in Borrow borrow, DateOnly returnDate, out int days)
 
     if (deadline < returnDate)
     {
-        days = (returnDate.DayNumber - deadline.DayNumber);
+        days = returnDate.DayNumber - deadline.DayNumber;
         return true;
     }
     else
@@ -317,29 +303,14 @@ bool IsLate(in Borrow borrow, DateOnly returnDate, out int days)
 
 void AddNewMember()
 {
-    var name = "";
-    var surname = "";
     DateOnly date;
 
     Console.Clear();
-    while (name == "")
-    {
-        Console.Write("Unesite ime: ");
-        name = Console.ReadLine() ?? "";
-        if (name == "")
-            Console.WriteLine("Molimo unesite ime!");
-    }
-    while (surname == "")
-    {
-        Console.Write("Unesite prezime: ");
-        surname = Console.ReadLine() ?? "";
-        if (surname == "")
-            Console.WriteLine("Molimo unesite prezime!");
-    }
+    var name = ReadRequiredString("Unesite ime", "Molimo unesite ime!");
+    var surname = ReadRequiredString("Unesite prezime", "Molimo unesite prezime!");
     while (true)
     {
-        Console.Write("Unesite datum rođenja (YYYY-MM-DD): ");
-        var dateString = Console.ReadLine() ?? "";
+        var dateString = ReadRequiredString("Unesite datum rođenja (YYYY-MM-DD)", "Molimo unesite datum!");
 
         if (!DateOnly.TryParse(dateString, out date))
             Console.WriteLine("Neispravan unos datuma, molimo pokušajte ponovno.");
@@ -379,15 +350,10 @@ void DeleteMember()
 
 void DeleteMemberById()
 {
-    int id = -1;
-    bool idValid = false;
+    int id;
 
     Console.Clear();
-    while (!idValid)
-    {
-        Console.Write("Unesite ID clana: ");
-        idValid = int.TryParse(Console.ReadLine(), out id);
-    }
+    while (!int.TryParse(ReadRequiredString("Unesite ID člana", "Molimo unesite ID!"), out id)) ;
 
     var firstMember = members.Find(m => m.id == id);
     if (firstMember != default)
@@ -406,18 +372,8 @@ void DeleteMemberByName()
 {
     Console.Clear();
 
-    var name = "";
-    var surname = "";
-    while (name == "")
-    {
-        Console.Write("Unesite ime: ");
-        name = Console.ReadLine();
-    }
-    while (surname == "")
-    {
-        Console.Write("Unesite prezime: ");
-        surname = Console.ReadLine();
-    }
+    var name = ReadRequiredString("Unesite ime", "Molimo unesite ime!");
+    var surname = ReadRequiredString("Unesite prezime", "Molimo unesite ime!");
 
     var firstMember = members.Find(m => m.name == name && m.surname == surname);
     if (firstMember != default)
@@ -561,5 +517,24 @@ bool IsPromptPositive(in string prompt)
             return true;
         else if (choice == 'n' || choice == 'N')
             return false;
+    }
+}
+
+string ReadRequiredString(string prompt, string? invalidMsg)
+{
+    string? str;
+
+    while (true)
+    {
+        Console.Write($"{prompt}: ");
+        str = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            if (invalidMsg != null)
+                Console.WriteLine(invalidMsg);
+        }
+        else
+            return str.Trim();
     }
 }
