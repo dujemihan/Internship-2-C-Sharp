@@ -73,6 +73,27 @@ int LoopMembersMenu()
             return 1;
         case '4':
             PrintAllMembers();
+            Console.WriteLine("Svi članovi mlađi od 18:");
+            foreach (var member in members)
+            {
+                if (GetMemberAge(member) < 18)
+                    PrintMember(member);
+            }
+            Console.WriteLine("Svi članovi s barem jednom nevraćenom knjigom:");
+            foreach (var member in members)
+            {
+                var memberId = member.id;
+
+                foreach (var borrow in borrows)
+                {
+                    if (memberId == borrow.memberId && borrow.returnDate == null)
+                    {
+                        PrintMember(member);
+                        break;
+                    }
+                }
+            }
+            WaitForKey();
             return 1;
         default:
             return 0;
@@ -109,10 +130,12 @@ int LoopBorrowsMenu()
             DeleteBorrow();
             return 1;
         case '5':
-            Console.Clear();
-            PrintBorrows();
-            WaitForKey();
-            return 1;
+            {
+                Console.Clear();
+                PrintBorrows();
+                WaitForKey();
+                return 1;
+            }
         default:
             return 0;
     }
@@ -457,10 +480,13 @@ void PrintAllMembers()
 
     foreach (var member in members)
     {
-        Console.WriteLine($"[{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)})");
+        PrintMember(member);
     }
+}
 
-    WaitForKey();
+void PrintMember(in Member member)
+{
+    Console.WriteLine($"[{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)})");
 }
 
 int GetMemberAge(in Member member)
