@@ -17,6 +17,9 @@ var borrows = new List<Borrow>
     (48912783, 342780942, "Harry Potter i kamen mudraca", "J. K. Rowling", new DateOnly(2026, 8, 15), new DateOnly(2026, 9, 10))
 };
 
+const int BORROW_LENGTH         = 21;
+const double LATE_FEE_PER_DAY   = 0.5;
+
 Console.OutputEncoding = Encoding.UTF8;
 
 while (true)
@@ -86,9 +89,9 @@ void StartAnalyticsMenuLoop()
                     foreach (var borrow in borrows.Where(b => b.memberId == id))
                     {
                         var compDate = borrow.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
-                        totalDays += int.Clamp(compDate.DayNumber - borrow.borrowDate.DayNumber - 21, 0, int.MaxValue);
+                        totalDays += int.Clamp(compDate.DayNumber - borrow.borrowDate.DayNumber - BORROW_LENGTH, 0, int.MaxValue);
                     }
-                    Console.WriteLine($"Ukupna zakasnina za člana iznosi {totalDays * 0.5} €.");
+                    Console.WriteLine($"Ukupna zakasnina za člana iznosi {totalDays * LATE_FEE_PER_DAY} €.");
                     break;
                 }
             case '3':
@@ -111,7 +114,7 @@ void StartAnalyticsMenuLoop()
                     foreach (var borrow in memberBorrows)
                     {
                         var compDate = borrow.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
-                        lateDays[borrow.id] = int.Clamp(compDate.DayNumber - borrow.borrowDate.DayNumber - 21, 0, int.MaxValue);
+                        lateDays[borrow.id] = int.Clamp(compDate.DayNumber - borrow.borrowDate.DayNumber - BORROW_LENGTH, 0, int.MaxValue);
                     }
                     var max = lateDays.OrderByDescending(kvp => kvp.Value).FirstOrDefault();
                     Console.WriteLine($"Najkasnija članova posudba kasni/je kasnila {max.Value} dana.");
@@ -577,7 +580,7 @@ void ReturnBook()
 
         borrow.returnDate = returnDate;
         borrows[index] = borrow;
-        Console.WriteLine($"Knjiga uspješno vraćena. Vraćanje {(isLate ? $"je zakašnjelo {days} dana, a zakasnina iznosi {days * 0.5} €" : "nije zakašnjelo")}.");
+        Console.WriteLine($"Knjiga uspješno vraćena. Vraćanje {(isLate ? $"je zakašnjelo {days} dana, a zakasnina iznosi {days * LATE_FEE_PER_DAY} €" : "nije zakašnjelo")}.");
     }
 
     WaitForKey();
@@ -627,12 +630,12 @@ void PrintBorrow(in Borrow b, DateOnly? returnDate)
     var compDate = b.returnDate ?? returnDate ?? DateOnly.FromDateTime(DateTime.Today);
     var isLate = IsLate(b, compDate, out int days);
 
-    Console.WriteLine($"[{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate.HasValue ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €")} ");
+    Console.WriteLine($"[{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate.HasValue ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * LATE_FEE_PER_DAY} €")} ");
 }
 
 bool IsLate(in Borrow borrow, DateOnly returnDate, out int days)
 {
-    var deadline = borrow.borrowDate.AddDays(21);
+    var deadline = borrow.borrowDate.AddDays(BORROW_LENGTH);
     days = 0;
 
     if (deadline < returnDate)
