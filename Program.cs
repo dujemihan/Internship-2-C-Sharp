@@ -10,7 +10,7 @@ var members = new List<Member>
 };
 var borrows = new List<Borrow>
 {
-    (48912778, 512369754, "Idiot", "Fjodor Mihajlovič Dostojevski", new DateOnly(2026, 3, 25), new DateOnly(2026, 4, 18)),
+    (48912778, 512369754, "Idiot", "Fjodor Mihajlovič Dostojevski", new DateOnly(2025, 7, 25), new DateOnly(2026, 8, 18)),
     (48912779, 512369754, "Zločin i kazna", "Fjodor Mihajlovič Dostojevski", new DateOnly(2026, 9, 1), null),
     (48912780, 574890313, "Na Drini ćuprija", "Ivo Andrić", new DateOnly(2026, 8, 10), new DateOnly(2026, 9, 2)),
     (48912781, 574890313, "Mali princ", "Antoine de Saint-Exupéry", new DateOnly(2026, 9, 5), null),
@@ -311,6 +311,15 @@ void StartPrintBorrowsMenuLoop()
                     break;
                 }
             case '6':
+                {
+                    var groups = borrows.GroupBy(b => new { b.borrowDate.Month, b.borrowDate.Year }).OrderByDescending(b => b.Key.Year).ThenByDescending(b => b.Key.Month);
+                    foreach (var group in groups)
+                    {
+                        Console.WriteLine($"{group.Key.Year}-{group.Key.Month}");
+                        PrintBorrows(group);
+                    }
+                    break;
+                }
             default:
                 return;
         }
