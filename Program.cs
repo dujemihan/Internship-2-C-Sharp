@@ -46,11 +46,6 @@ while (true)
 
 void StartMembersMenuLoop()
 {
-    while (LoopMembersMenu() != 0) ;
-}
-
-int LoopMembersMenu()
-{
     const string menu = @"1 - Unos novog člana
 2 - Brisanje člana
 3 - Uređivanje člana
@@ -58,54 +53,51 @@ int LoopMembersMenu()
 0 - Povratak na glavni izbornik
 ";
     char[] allowed = ['1', '2', '3', '4'];
-    char option = ShowMenu(menu, allowed);
 
-    switch (option)
+    while (true)
     {
-        case '1':
-            AddNewMember();
-            return 1;
-        case '2':
-            DeleteMember();
-            return 1;
-        case '3':
-            StartEditMemberMenu();
-            return 1;
-        case '4':
-            PrintAllMembers();
-            Console.WriteLine("Svi članovi mlađi od 18:");
-            foreach (var member in members)
-            {
-                if (GetMemberAge(member) < 18)
-                    PrintMember(member);
-            }
-            Console.WriteLine("Svi članovi s barem jednom nevraćenom knjigom:");
-            foreach (var member in members)
-            {
-                var memberId = member.id;
-
-                foreach (var borrow in borrows)
+        switch (ShowMenu(menu, allowed))
+        {
+            case '1':
+                AddNewMember();
+                break;
+            case '2':
+                DeleteMember();
+                break;
+            case '3':
+                StartEditMemberMenu();
+                break;
+            case '4':
+                PrintAllMembers();
+                Console.WriteLine("Svi članovi mlađi od 18:");
+                foreach (var member in members)
                 {
-                    if (memberId == borrow.memberId && !borrow.returnDate.HasValue)
-                    {
+                    if (GetMemberAge(member) < 18)
                         PrintMember(member);
-                        break;
+                }
+                Console.WriteLine("Svi članovi s barem jednom nevraćenom knjigom:");
+                foreach (var member in members)
+                {
+                    var memberId = member.id;
+
+                    foreach (var borrow in borrows)
+                    {
+                        if (memberId == borrow.memberId && !borrow.returnDate.HasValue)
+                        {
+                            PrintMember(member);
+                            break;
+                        }
                     }
                 }
-            }
-            WaitForKey();
-            return 1;
-        default:
-            return 0;
+                WaitForKey();
+                break;
+            default:
+                return;
+        }
     }
 }
 
 void StartBorrowsMenuLoop()
-{
-    while (LoopBorrowsMenu() != 0) ;
-}
-
-int LoopBorrowsMenu()
 {
     const string menu = @"1 - Unos nove posudbe
 2 - Vraćanje knjige
@@ -116,31 +108,33 @@ int LoopBorrowsMenu()
 0 - Povratak na glavni izbornik
 ";
     char[] allowed = ['1', '2', '3', '4', '5', '6'];
-    char option = ShowMenu(menu, allowed);
 
-    switch (option)
+    while (true)
     {
-        case '1':
-            AddNewBorrow();
-            return 1;
-        case '2':
-            ReturnBook();
-            return 1;
-        case '3':
-            StartDeleteBorrowMenu();
-            return 1;
-        case '4':
-            EditBorrow();
-            return 1;
-        case '5':
-            {
+        switch (ShowMenu(menu, allowed))
+        {
+            case '1':
+                AddNewBorrow();
+                break;
+            case '2':
+                ReturnBook();
+                break;
+            case '3':
+                StartDeleteBorrowMenu();
+                break;
+            case '4':
+                EditBorrow();
+                break;
+            case '5':
                 Console.Clear();
                 PrintBorrows();
                 WaitForKey();
-                return 1;
-            }
-        default:
-            return 0;
+                break;
+            case '6':
+                break;
+            default:
+                return;
+        }
     }
 }
 
@@ -161,18 +155,11 @@ void EditBorrow()
 
     PrintBorrow(borrow, null);
 
-    Console.Write("Unesite novi naslov (prazno = nema promjene): ");
-    var titleInput = Console.ReadLine()?.Trim();
-    var title = string.IsNullOrWhiteSpace(titleInput) ? borrow.title : titleInput;
-    Console.Write("Unesite novog autora (prazno = nema promjene): ");
-    var authorInput = Console.ReadLine()?.Trim();
-    var author = string.IsNullOrWhiteSpace(authorInput) ? borrow.author : authorInput;
+    borrow.title = ReadOptionalString("Unesite novi naslov (prazno = nema promjene)", borrow.title);
+    borrow.author = ReadOptionalString("Unesite novog autora (prazno = nema promjene)", borrow.author);
     Console.Write("Unesite novi datum posudbe (prazno ili nevaljano = nema promjene): ");
     if (!DateOnly.TryParse(Console.ReadLine()?.Trim(), out var borrowDate))
         borrowDate = borrow.borrowDate;
-
-    borrow.title = title;
-    borrow.author = author;
     borrow.borrowDate = borrowDate;
 
     PrintBorrow(borrow, null);
@@ -197,7 +184,7 @@ void StartDeleteBorrowMenu()
 
     while (true)
     {
-        switch(ShowMenu(menu, allowed))
+        switch (ShowMenu(menu, allowed))
         {
             case '1':
                 DeleteBorrowById();
@@ -272,7 +259,7 @@ void DeleteBorrowsByMember()
     }
 
     List<Borrow> targetBorrows = [];
-    foreach(var borrow in borrows)
+    foreach (var borrow in borrows)
     {
         if (borrow.memberId == id && !borrow.returnDate.HasValue)
         {
