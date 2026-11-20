@@ -135,7 +135,7 @@ void DeleteBorrow()
         return;
     }
 
-    PrintBorrow(borrow);
+    PrintBorrow(borrow, null);
     if (IsPromptPositive("Želite li izbrisati ovu posudbu?"))
     {
         borrows.Remove(borrow);
@@ -184,12 +184,18 @@ void ReturnBook()
 {
     Console.Clear();
 
-    if (!HasChosenBorrowFromList(out var borrow))
+    int id, index;
+    while (!int.TryParse(ReadRequiredString("Unesite ID posudbe", "Molimo unesite ID!"), out id)) ;
+
+    index = borrows.FindIndex(b => b.id == id);
+    if (index < 0)
     {
+        Console.WriteLine("Ova posudba ne postoji.");
         WaitForKey();
         return;
     }
 
+    var borrow = borrows[index];
     if (borrow.returnDate != default)
     {
         Console.WriteLine("Ova je posudba već zaključena!");
@@ -210,13 +216,15 @@ void ReturnBook()
             break;
     }
 
-    borrow.returnDate = returnDate;
-    int borrowIndex = borrows.FindIndex(b => b.id == borrow.id);
-    if (borrowIndex >= 0)
-        borrows[borrowIndex] = borrow;
+    PrintBorrow(borrow, returnDate);
+    if (IsPromptPositive("Želite li vratiti ovu knjigu?"))
+    {
+        var isLate = IsLate(borrow, returnDate, out int days);
 
-    var isLate = IsLate(borrow, returnDate, out int days);
-    Console.WriteLine($"Knjiga uspješno vraćena. Vraćanje {(isLate ? $"je zakašnjelo {days} dana, a zakasnina iznosi {days * 0.5} €" : "nije zakašnjelo")}.");
+        borrow.returnDate = returnDate;
+        borrows[index] = borrow;
+        Console.WriteLine($"Knjiga uspješno vraćena. Vraćanje {(isLate ? $"je zakašnjelo {days} dana, a zakasnina iznosi {days * 0.5} €" : "nije zakašnjelo")}.");
+    }
 
     WaitForKey();
 }
@@ -281,14 +289,14 @@ void PrintBorrows()
     {
         var b = borrows[i];
         Console.Write($"{i + 1}. ");
-        PrintBorrow(b);
+        PrintBorrow(b, null);
     }
 }
 
-void PrintBorrow(in Borrow b)
+void PrintBorrow(in Borrow b, DateOnly? returnDate)
 {
-    var returnDate = b.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
-    var isLate = IsLate(b, returnDate, out int days);
+    var compDate = returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+    var isLate = IsLate(b, compDate, out int days);
 
     Console.WriteLine($"[{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate != null ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €")} ");
 }
