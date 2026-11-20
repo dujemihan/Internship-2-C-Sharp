@@ -194,7 +194,7 @@ void ReturnBook()
         borrows[borrowIndex] = borrow;
 
     var isLate = IsLate(borrow, returnDate, out int days);
-    Console.WriteLine($"Knjiga uspješno vraćena. Vraćanje {(isLate ? $"je zakašnjelo {days} dana, a zakasnina iznosi {days * 0.5} €": "nije zakašnjelo")}.");
+    Console.WriteLine($"Knjiga uspješno vraćena. Vraćanje {(isLate ? $"je zakašnjelo {days} dana, a zakasnina iznosi {days * 0.5} €" : "nije zakašnjelo")}.");
 
     WaitForKey();
 }
@@ -236,13 +236,13 @@ bool HasChosenBorrowFromList(out Borrow borrow)
         Console.WriteLine("Nema posudbi, molimo unesite posudbu.");
         return false;
     }
-     
+
     for (int i = 0; i < borrows.Count; i++)
     {
         var b = borrows[i];
         var returnDate = b.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
         var isLate = IsLate(b, returnDate, out int days);
-        Console.WriteLine($"{i + 1}. [{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate != null ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €" )} ");
+        Console.WriteLine($"{i + 1}. [{b.id}] \"{b.title}\" - {b.author} | posuđeno: {b.borrowDate} | {(b.returnDate != null ? $"vraćeno: {b.returnDate}" : $"nije vraćeno | kašnjenje: {days} dana | zakasnina: {days * 0.5} €")} ");
     }
 
     int choice;
@@ -321,7 +321,7 @@ void DeleteMember()
 ";
     char[] allowed = ['1', '2'];
     char option = ShowMenu(menu, allowed);
-    
+
     switch (option)
     {
         case '1':
@@ -341,13 +341,14 @@ void DeleteMemberById()
     bool idValid = false;
 
     Console.Clear();
-    while (!idValid) {
+    while (!idValid)
+    {
         Console.Write("Unesite ID clana: ");
         idValid = int.TryParse(Console.ReadLine(), out id);
     }
 
     var firstMember = members.Find(m => m.id == id);
-    if (firstMember != default(Member))
+    if (firstMember != default)
     {
         DeleteFoundMember(firstMember);
     }
@@ -377,7 +378,7 @@ void DeleteMemberByName()
     }
 
     var firstMember = members.Find(m => m.name == name && m.surname == surname);
-    if (firstMember != default(Member))
+    if (firstMember != default)
     {
         DeleteFoundMember(firstMember);
     }
@@ -392,7 +393,7 @@ void DeleteFoundMember(in Member member)
 {
     while (true)
     {
-        Console .Write($"Pronađen član [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Želite li ga izbrisati? (Y/N) ");
+        Console.Write($"Pronađen član [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Želite li ga izbrisati? (Y/N) ");
         var key = Console.ReadKey().KeyChar;
         Console.WriteLine();
         if (key == 'y' || key == 'Y')
