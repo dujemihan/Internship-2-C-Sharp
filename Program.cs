@@ -23,10 +23,9 @@ while (true)
 {
     const string menu = @"1 - Članovi
 2 - Posudba
-3 - Statistika
 0 - Izlaz
 ";
-    char[] allowed = ['1', '2', '3', '4'];
+    char[] allowed = ['1', '2'];
     char option = ShowMenu(menu, allowed);
 
     switch (option)
@@ -37,9 +36,9 @@ while (true)
         case '2':
             StartBorrowsMenuLoop();
             break;
-        case '3':
-            break;
-        case '0':
+        //case '3':
+        //    break;
+        default:
             return;
     }
 }
