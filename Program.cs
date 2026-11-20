@@ -130,19 +130,10 @@ void DeleteBorrow()
     }
 
     PrintBorrow(borrow);
-    while (true)
+    if (IsPromptPositive("Želite li izbrisati ovu posudbu?"))
     {
-        Console.Write("Želite li izbrisati ovu posudbu? (Y/N) ");
-        var choice = Console.ReadKey().KeyChar;
-        Console.ReadLine();
-        if (choice == 'y' || choice == 'Y')
-        {
-            borrows.Remove(borrow);
-            Console.WriteLine("Posudba uspješno izbrisana.");
-            break;
-        }
-        else if (choice == 'n' || choice == 'N')
-            break;
+        borrows.Remove(borrow);
+        Console.WriteLine("Posudba uspješno izbrisana.");
     }
 
     WaitForKey();
@@ -442,27 +433,19 @@ void DeleteMemberByName()
 
 void DeleteFoundMember(in Member member)
 {
-    while (true)
+    if (IsPromptPositive($"Pronađen član [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Želite li ga izbrisati? (Y/N) "))
     {
-        Console.Write($"Pronađen član [{member.id}] {member.surname}, {member.name} ({GetMemberAge(member)}). Želite li ga izbrisati? (Y/N) ");
-        var key = Console.ReadKey().KeyChar;
-        Console.WriteLine();
-        if (key == 'y' || key == 'Y')
+        foreach (var borrow in borrows)
         {
-            foreach (var borrow in borrows)
+            if (borrow.memberId == member.id && borrow.returnDate == null)
             {
-                if (borrow.memberId == member.id && borrow.returnDate == null)
-                {
-                    Console.WriteLine("Nije moguće izbrisati člana s nevraćenim knjigama!");
-                    return;
-                }
+                Console.WriteLine("Nije moguće izbrisati člana s nevraćenim knjigama!");
+                return;
             }
-            members.Remove(member);
-            Console.WriteLine("Član uspješno izbrisan.");
-            return;
         }
-        else if (key == 'n' || key == 'N')
-            return;
+        members.Remove(member);
+        Console.WriteLine("Član uspješno izbrisan.");
+        return;
     }
 }
 
@@ -504,23 +487,15 @@ void EditMember(ref Member member)
     Console.Write("Unesite novi datum rođenja (prazno = nema promjene): ");
     var dobValid = DateOnly.TryParse(Console.ReadLine(), out var dob) && dob <= DateOnly.FromDateTime(DateTime.Today);
 
-    while (true)
+    if (IsPromptPositive($"Član će se urediti u {surname}, {name} ({_GetMemberAge(dobValid ? dob : member.dob)}). Jeste li sigurni?"))
     {
-        Console.Write($"Član će se urediti u {surname}, {name} ({_GetMemberAge(dobValid ? dob : member.dob)}). Jeste li sigurni? (Y/N) ");
-        var key = Console.ReadKey().KeyChar;
-        Console.WriteLine("");
-
-        if (key == 'y' || key == 'Y')
-        {
-            member.name = name;
-            member.surname = surname;
-            member.dob = dobValid ? dob : member.dob;
-            Console.WriteLine("Izmjena uspješna.");
-            break;
-        }
-        else if (key == 'n' || key == 'N')
-            break;
+        member.name = name;
+        member.surname = surname;
+        member.dob = dobValid ? dob : member.dob;
+        Console.WriteLine("Izmjena uspješna.");
     }
+
+    WaitForKey();
 }
 
 void PrintAllMembers()
@@ -572,5 +547,19 @@ char ShowMenu(in string menu, in char[] allowedOptions)
             return option;
 
         Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
+    }
+}
+
+bool IsPromptPositive(in string prompt)
+{
+    while (true)
+    {
+        Console.Write($"{prompt} (Y/N) ");
+        var choice = Console.ReadKey().KeyChar;
+        Console.WriteLine();
+        if (choice == 'y' || choice == 'Y')
+            return true;
+        else if (choice == 'n' || choice == 'N')
+            return false;
     }
 }
