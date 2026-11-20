@@ -1,4 +1,5 @@
-﻿using Borrow = (int id, int memberId, string title, string author, System.DateOnly borrowDate, System.DateOnly? returnDate);
+﻿using System.Text;
+using Borrow = (int id, int memberId, string title, string author, System.DateOnly borrowDate, System.DateOnly? returnDate);
 using Member = (int id, string name, string surname, System.DateOnly dob);
 var members = new List<Member>
 {
@@ -6,6 +7,8 @@ var members = new List<Member>
 var borrows = new List<Borrow>
 {
 };
+
+Console.OutputEncoding = Encoding.UTF8;
 
 while (true)
 {
