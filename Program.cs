@@ -146,7 +146,8 @@ void StartDeleteBorrowMenu()
     const string menu = @"1 - Po ID-ju
 2 - Sve vraćene određenog člana
 3 - Sve s zakasninom većom od iznosa
-0 - Povratak";
+0 - Povratak
+";
     char[] allowed = ['1', '2', '3'];
 
     while (true)
@@ -156,11 +157,50 @@ void StartDeleteBorrowMenu()
             case '1':
                 DeleteBorrowById();
                 break;
+            case '2':
+                DeleteBorrowsByMember();
+                break;
             default:
                 return;
         }
     }
 }
+
+void DeleteBorrowsByMember()
+{
+    Console.Clear();
+
+    int id;
+    while (!int.TryParse(ReadRequiredString("Unesite ID člana", "Molimo unesite ID!"), out id)) ;
+
+    var memberIndex = members.FindIndex(m => m.id == id);
+    if (memberIndex < 0)
+    {
+        Console.WriteLine("Član nije pronađen.");
+        WaitForKey();
+        return;
+    }
+
+    List<Borrow> targetBorrows = [];
+    foreach(var borrow in borrows)
+    {
+        if (borrow.memberId == id && borrow.returnDate != null)
+        {
+            targetBorrows.Add(borrow);
+            PrintBorrow(borrow, borrow.returnDate);
+        }
+    }
+
+    if (IsPromptPositive("Želite li izbrisati ove posudbe?"))
+    {
+        foreach (var borrow in targetBorrows)
+            borrows.Remove(borrow);
+        Console.WriteLine("Posudbe uspješno izbrisane.");
+    }
+
+    WaitForKey();
+}
+
 void DeleteBorrowById()
 {
     Console.Clear();
