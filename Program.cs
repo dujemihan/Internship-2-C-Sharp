@@ -38,7 +38,6 @@ while (true)
             StartBorrowsMenuLoop();
             break;
         case '3':
-            StartAnalyticsMenuLoop();
             break;
         case '0':
             return;
@@ -49,7 +48,7 @@ void StartAnalyticsMenuLoop()
 {
     const string menu = @"1 - Ukupan broj posudbi i broj nevraćenih knjiga
 2 - Ukupna zakasnina
-3 - Prosjećno trajanje posudbe
+3 - Prosječno trajanje posudbe
 4 - Posudba s najvećim kašnjenjem
 5 - Posudbe u vremenskom rasponu
 0 - Povratak
@@ -58,31 +57,81 @@ void StartAnalyticsMenuLoop()
 
     int id;
     while (!int.TryParse(ReadRequiredString("Unesite ID člana (0 za odustati)", "Molimo unesite ID!"), out id)) ;
+    if (id == 0)
+        return;
 
     var member = members.Find(m => m.id == id);
     if (member == default)
     {
         Console.WriteLine("Član ne postoji.");
-        WaitForKey();
         return;
     }
 
-    Console.Clear();
     while (true)
     {
         switch (ShowMenu(menu, allowed))
         {
             case '1':
+                {
+                    var memberBorrows = borrows.Where(b => b.memberId == id);
+                    Console.WriteLine($"Ukupan broj posudbi jest {memberBorrows.Count()}, a nevraćenih knjiga ima {memberBorrows.Where(b => b.returnDate is null).Count()}.");
+                    break;
+                }
             case '2':
+                {
+                    var totalDays = 0;
+                    foreach (var borrow in borrows.Where(b => b.memberId == id))
+                    {
+                        var compDate = borrow.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+                        totalDays += int.Clamp(compDate.DayNumber - borrow.borrowDate.DayNumber - 21, 0, int.MaxValue);
+                    }
+                    Console.WriteLine($"Ukupna zakasnina za člana iznosi {totalDays * 0.5} €.");
+                    break;
+                }
             case '3':
+                {
+                    var memberBorrows = borrows.Where(b => b.memberId == id);
+                    var totalDays = 0;
+                    foreach (var borrow in memberBorrows)
+                    {
+                        var compDate = borrow.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+                        totalDays += compDate.DayNumber - borrow.borrowDate.DayNumber;
+                    }
+                    Console.WriteLine($"Prosječna posudba člana traje {(double)totalDays / memberBorrows.Count()} dana.");
+                    break;
+                }
             case '4':
+                {
+                    var memberBorrows = borrows.Where(b => b.memberId == id);
+                    Dictionary<int, int> lateDays = [];
+
+                    foreach (var borrow in memberBorrows)
+                    {
+                        var compDate = borrow.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+                        lateDays[borrow.id] = int.Clamp(compDate.DayNumber - borrow.borrowDate.DayNumber - 21, 0, int.MaxValue);
+                    }
+                    var max = lateDays.OrderByDescending(kvp => kvp.Value).FirstOrDefault();
+                    Console.WriteLine($"Najkasnija članova posudba kasni/je kasnila {max.Value} dana.");
+                    break;
+                }
             case '5':
+                {
+                    DateOnly start, end;
+                    while (!DateOnly.TryParse(ReadRequiredString("Unesite početni datum (YYYY-MM-DD)", "Molimo unesite datum!"), out start)) ;
+                    while (!DateOnly.TryParse(ReadRequiredString("Unesite krajnji datum (YYYY-MM-DD)", "Molimo unesite datum!"), out end)) ;
+
+                    var memberBorrows = borrows.Where(b => b.memberId == id && b.borrowDate >= start && b.borrowDate <= end);
+                    PrintBorrows(memberBorrows);
+                }
                 break;
             default:
                 return;
         }
+        WaitForKey();
     }
 }
+
+
 
 void StartMembersMenuLoop()
 {
@@ -167,10 +216,12 @@ void StartBorrowsMenuLoop()
                 break;
             case '5':
                 Console.Clear();
-                PrintBorrows();
+                PrintBorrows(borrows);
                 WaitForKey();
                 break;
             case '6':
+                StartAnalyticsMenuLoop();
+                WaitForKey();
                 break;
             default:
                 return;
@@ -464,11 +515,11 @@ bool HasChosenMemberFromList(out Member member)
     return true;
 }
 
-void PrintBorrows()
+void PrintBorrows(IEnumerable<Borrow> borrowArray)
 {
-    for (int i = 0; i < borrows.Count; i++)
+    for (int i = 0; i < borrowArray.Count(); i++)
     {
-        var b = borrows[i];
+        var b = borrowArray.ElementAt(i);
         Console.Write($"{i + 1}. ");
         PrintBorrow(b, b.returnDate);
     }
