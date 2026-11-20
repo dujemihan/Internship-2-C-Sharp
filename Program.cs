@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Authentication.ExtendedProtection;
+using System.Text;
 using Borrow = (int id, int memberId, string title, string author, System.DateOnly borrowDate, System.DateOnly? returnDate);
 using Member = (int id, string name, string surname, System.DateOnly dob);
 var members = new List<Member>
@@ -268,8 +269,46 @@ void StartPrintBorrowsMenuLoop()
                     break;
                 }
             case '3':
+                {
+                    Dictionary<int, int> lateDays = [];
+                    
+                    foreach (var borrow in borrows)
+                    {
+                        var compDate = borrow.returnDate ?? DateOnly.FromDateTime(DateTime.Today);
+                        IsLate(borrow, compDate, out int days);
+                        lateDays.Add(borrow.id, days);
+                    }
+
+                    if (IsPromptPositive("Želite li sortirati uzlazno?"))
+                    {
+                        var sortedLateDays = lateDays.OrderBy(kv => kv.Value);
+                        foreach (var (k, v) in sortedLateDays)
+                            PrintBorrow(borrows.Where(b => b.id == k).FirstOrDefault(), null);
+                    }
+                    else
+                    {
+                        var sortedLateDays = lateDays.OrderByDescending(kv => kv.Value);
+                        foreach (var (k, v) in sortedLateDays)
+                            PrintBorrow(borrows.Where(b => b.id == k).FirstOrDefault(), null);
+                    }
+
+                    break;
+                }
             case '4':
+                {
+                    var unreturnedBorrows = borrows.Where(b => !b.returnDate.HasValue);
+                    Console.WriteLine("Nevraćene posudbe:");
+                    PrintBorrows(unreturnedBorrows);
+                    break;
+                }
             case '5':
+                {
+                    var term = ReadRequiredString("Unesite pojam za pretragu", "Molimo unesite pojam!");
+                    var results = borrows.Where(b => b.author.Contains(term, StringComparison.CurrentCultureIgnoreCase) || b.title.Contains(term, StringComparison.CurrentCultureIgnoreCase));
+                    Console.WriteLine("Rezultati pretrage:");
+                    PrintBorrows(results);
+                    break;
+                }
             case '6':
             default:
                 return;
