@@ -38,9 +38,49 @@ while (true)
             StartBorrowsMenuLoop();
             break;
         case '3':
+            StartAnalyticsMenuLoop();
             break;
         case '0':
             return;
+    }
+}
+
+void StartAnalyticsMenuLoop()
+{
+    const string menu = @"1 - Ukupan broj posudbi i broj nevraćenih knjiga
+2 - Ukupna zakasnina
+3 - Prosjećno trajanje posudbe
+4 - Posudba s najvećim kašnjenjem
+5 - Posudbe u vremenskom rasponu
+0 - Povratak
+";
+    char[] allowed = ['1', '2', '3', '4', '5'];
+
+    int id;
+    while (!int.TryParse(ReadRequiredString("Unesite ID člana (0 za odustati)", "Molimo unesite ID!"), out id)) ;
+
+    var member = members.Find(m => m.id == id);
+    if (member == default)
+    {
+        Console.WriteLine("Član ne postoji.");
+        WaitForKey();
+        return;
+    }
+
+    Console.Clear();
+    while (true)
+    {
+        switch (ShowMenu(menu, allowed))
+        {
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+                break;
+            default:
+                return;
+        }
     }
 }
 
