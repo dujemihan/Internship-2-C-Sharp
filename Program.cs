@@ -1,5 +1,4 @@
-﻿using System.Security.Authentication.ExtendedProtection;
-using System.Text;
+﻿using System.Text;
 using Borrow = (int id, int memberId, string title, string author, System.DateOnly borrowDate, System.DateOnly? returnDate);
 using Member = (int id, string name, string surname, System.DateOnly dob);
 var members = new List<Member>
